@@ -1,0 +1,12 @@
+{
+  "name": "@studiowebux/noditor-graph",
+  "version": "1.0.0",
+  "exports": "./src/mod.ts",
+  "publish": {
+    "include": ["LICENSE", "README.md", "src/**/*.ts"],
+    "exclude": [".github/", "example/", "html/"]
+  },
+  "imports": {
+    "graphology": "npm:graphology@0.26.0"
+  }
+}

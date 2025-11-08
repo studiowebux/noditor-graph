@@ -1,0 +1,11 @@
+html/generated/**/
+html/generated/*.js
+html/generated/*.json
+html/generated/*.md
+
+example/md/**/
+example/md/**/*.js
+example/md/**/*.json
+example/md/**/*.md
+
+.DS_Store
