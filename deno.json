@@ -1,6 +1,6 @@
 {
   "name": "@studiowebux/noditor-graph",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "exports": "./src/mod.ts",
   "publish": {
     "include": ["LICENSE", "README.md", "src/**/*.ts"],

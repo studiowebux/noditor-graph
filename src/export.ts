@@ -66,14 +66,16 @@ export function graphologyToMD<
     if (items.has(row.source)) {
       data = items.get(row.source)!;
     } else {
-      // Find the source node, optionally applying the filter
-      const node = rows.nodes.find((n) => {
-        if (n.id !== row.source) return false;
-        return nodeFilter ? nodeFilter(n as TNode) : true;
-      });
+      // Find the source node by id; a truly missing node is an error.
+      const node = rows.nodes.find((n) => n.id === row.source);
 
       if (!node) {
         throw new Error(`No node found for ${row.source} => ${row.target}`);
+      }
+
+      // A node that exists but is excluded by the filter just skips this link.
+      if (nodeFilter && !nodeFilter(node as TNode)) {
+        continue;
       }
 
       data = createEmptyItem();
