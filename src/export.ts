@@ -60,26 +60,32 @@ export function graphologyToMD<
 }): void {
   const items: Map<string, TItem> = new Map();
 
+  // Seed an item for every (filtered) node up front so that nodes with no
+  // edges still appear in the output instead of being silently dropped.
+  for (const node of rows.nodes) {
+    if (nodeFilter && !nodeFilter(node as TNode)) {
+      continue;
+    }
+
+    const data = createEmptyItem();
+    populateItemFromNode(data, node as TNode);
+    items.set(node.id, data);
+  }
+
   for (const row of rows.links) {
-    let data: TItem;
+    const data = items.get(row.source);
 
-    if (items.has(row.source)) {
-      data = items.get(row.source)!;
-    } else {
-      // Find the source node by id; a truly missing node is an error.
-      const node = rows.nodes.find((n) => n.id === row.source);
+    if (!data) {
+      // No seeded item means the source node was either filtered out or is
+      // genuinely missing. A truly missing node is an error; a filtered one
+      // just skips this link.
+      const exists = rows.nodes.some((n) => n.id === row.source);
 
-      if (!node) {
+      if (!exists) {
         throw new Error(`No node found for ${row.source} => ${row.target}`);
       }
 
-      // A node that exists but is excluded by the filter just skips this link.
-      if (nodeFilter && !nodeFilter(node as TNode)) {
-        continue;
-      }
-
-      data = createEmptyItem();
-      populateItemFromNode(data, node as TNode);
+      continue;
     }
 
     // Find the target node for additional context
@@ -88,7 +94,6 @@ export function graphologyToMD<
       | undefined;
 
     processLink(data, row, targetNode);
-    items.set(row.source, data);
   }
 
   return generateMarkdown(items);
